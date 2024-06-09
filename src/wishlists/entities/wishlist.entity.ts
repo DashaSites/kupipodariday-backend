@@ -1,10 +1,14 @@
-import { IsEmail, IsUrl, Length } from 'class-validator';
+import { IsUrl, Length, MaxLength } from 'class-validator';
+import { User } from 'src/users/entities/user.entity';
+import { Wish } from 'src/wishes/entities/wish.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  ManyToOne,
 } from 'typeorm';
 
 @Entity()
@@ -18,38 +22,26 @@ export class Wishlist {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ unique: true })
-  @Length(2, 30, {
-    message: 'Username needs to be between 2 and 30 characters',
+  @Column()
+  @Length(1, 250, {
+    message: 'Wishlist name needs to be between 1 and 250 characters',
   })
-  username: string;
-
-  @Column({ default: 'No info so far' })
-  @Length(2, 30, {
-    message: 'This field needs to contain between 2 and 200 characters',
-  })
-  about: string;
-
-  @Column({ default: 'https://i.pravatar.cc/300' })
-  @IsUrl()
-  avatar: string;
-
-  @Column({ unique: true })
-  @IsEmail()
-  email: string;
+  name: string;
 
   @Column()
-  password: string;
+  @MaxLength(1500, {
+    message: 'Wishlist description can be maximum 1500 characters',
+  })
+  description: string;
 
-  // Подарки
-  // !! Установить какой-то тип связи с таблицей подарков
-  // wishes: Wish[];
+  @Column()
+  @IsUrl()
+  image: string;
 
-  // Список подарков, на которые скидывается пользователь
-  // !! Установить какой-то тип связи с таблицей wishes
-  // offers: Offer[];
+  @ManyToMany(() => Wish)
+  // ??
+  items: Wish[];
 
-  // Cписок вишлистов, которые создал пользователь
-  // !! Установить какой-то тип связи с таблицей wishlists
-  // wishlists: Wishlist[];
+  @ManyToOne(() => User)
+  owner: User;
 }

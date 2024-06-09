@@ -1,5 +1,7 @@
 import { IsNumber, IsUrl, Length } from 'class-validator';
+import { Offer } from 'src/offers/entities/offer.entity';
 import { User } from 'src/users/entities/user.entity';
+import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +9,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
+  ManyToMany,
 } from 'typeorm';
 
 @Entity()
@@ -22,7 +26,7 @@ export class Wish {
 
   @Column()
   @Length(1, 250, {
-    message: 'Name field needs to be between 1 and 250 characters',
+    message: 'Name needs to be between 1 and 250 characters',
   })
   name: string;
 
@@ -34,19 +38,13 @@ export class Wish {
   @IsUrl()
   image: string;
 
-  // ?? Cтоимость подарка, С ОКРУГЛЕНИЕМ ДО СОТЫХ (?), число
-  @Column()
+  @Column('decimal', { scale: 2 })
   @IsNumber()
   price: number;
 
-  // ?? сумма, тоже округляется до сотых (?)
-  @Column()
+  @Column('decimal', { scale: 2 })
   @IsNumber()
   raised: number;
-
-  // ?? ссылка на пользователя, который добавил пожелание подарка
-  @ManyToOne(() => User, (user) => user.wishes)
-  owner: User;
 
   @Column()
   @Length(1, 1024, {
@@ -54,12 +52,20 @@ export class Wish {
   })
   description: string;
 
-  // ?? Массив ссылок на заявки скинуться от других пользователей
-  // ?? Установить подходящий тип связи
-  // offers: Offer[];
+  // ссылка на пользователя, который добавил пожелание подарка
+  @ManyToOne(() => User, (user) => user.wishes)
+  owner: User;
 
-  // ?? содержит cчётчик тех, кто скопировал подарок себе. Целое десятичное число
-  @Column()
+  // Массив ссылок на заявки скинуться от других пользователей
+  @OneToMany(() => Offer, (offer) => offer.item)
+  offers: Offer[];
+
+  // Cодержит cчётчик тех, кто скопировал подарок себе. Целое десятичное число
+  @Column('integer')
   @IsNumber()
   copied: number;
+
+  // Ссылка на все вишлисты, где фигурирует желание
+  @ManyToMany(() => Wishlist, (wishlist) => wishlist.items)
+  wishlists: Wishlist[];
 }

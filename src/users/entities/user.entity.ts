@@ -1,5 +1,7 @@
 import { IsEmail, IsUrl, Length } from 'class-validator';
+import { Offer } from 'src/offers/entities/offer.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
+import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -48,10 +50,10 @@ export class User {
   wishes: Wish[];
 
   // Список подарков, на которые скидывается пользователь
-  // ?? Установить какой-то тип связи с таблицей offers
-  // offers: Offer[];
+  @OneToMany(() => Offer, (offer) => offer.user)
+  offers: Offer[];
 
   // Cписок вишлистов, которые создал пользователь
-  // ?? Установить какой-то тип связи с таблицей wishlists
-  // wishlists: Wishlist[];
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
+  wishlists: Wishlist[];
 }
