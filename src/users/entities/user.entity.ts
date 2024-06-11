@@ -30,7 +30,7 @@ export class User {
 
   @Column({ default: 'No info so far' })
   @Length(2, 30, {
-    message: 'This field needs to contain between 2 and 200 characters',
+    message: 'Info about you needs to contain between 2 and 200 characters',
   })
   about: string;
 
