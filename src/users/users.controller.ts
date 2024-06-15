@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { AuthUser } from 'src/utils/decorators/user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { WishesService } from 'src/wishes/wishes.service';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -21,6 +22,7 @@ export class UsersController {
     return this.usersService.getAllUsers();
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   async findOwn(@AuthUser() user: User): Promise<User> {
     // findOne - метод, описанный внутри сервиса UsersService
@@ -52,6 +54,4 @@ export class UsersController {
     const { id } = user;
     return this.usersService.update(id, updateUserDto);
   }
-
-  // @Post()
 }

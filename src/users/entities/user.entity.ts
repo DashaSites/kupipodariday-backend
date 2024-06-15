@@ -1,4 +1,4 @@
-import { IsEmail, IsUrl, Length } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsUrl, Length } from 'class-validator';
 import { Offer } from 'src/offers/entities/offer.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { Wishlist } from 'src/wishlists/entities/wishlist.entity';
@@ -26,6 +26,7 @@ export class User {
   @Length(2, 30, {
     message: 'Username needs to be between 2 and 30 characters',
   })
+  @IsNotEmpty()
   username: string;
 
   @Column({ default: 'No info so far' })
@@ -40,9 +41,11 @@ export class User {
 
   @Column({ unique: true })
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
-  @Column()
+  @Column({ select: false })
+  @IsNotEmpty()
   password: string;
 
   // Желания

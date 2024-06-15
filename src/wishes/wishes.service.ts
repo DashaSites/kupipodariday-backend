@@ -16,6 +16,7 @@ export class WishesService {
   // Создать желание
   async create(createWishDto: CreateWishDto, userId: number) {
     const owner = await this.usersService.findById(userId);
+    console.log(userId, owner);
     const wish = await this.wishesRepository.create({
       ...createWishDto,
       owner,
@@ -30,5 +31,21 @@ export class WishesService {
       where: { owner: { id: ownerId } }, // массив будет искаться по полю owner
       relations: ['owner'],
     });
+  }
+
+  // Скопировать к себе желание
+  async copy(wishId: number, userId: number) {
+    const wish = await this.wishesRepository.findOneOrFail({
+      where: { id: wishId },
+    });
+    const createWishDto: CreateWishDto = {
+      name: wish.name,
+      link: wish.link,
+      image: wish.image,
+      price: wish.price,
+      description: wish.description,
+    };
+
+    return this.create(createWishDto, userId);
   }
 }

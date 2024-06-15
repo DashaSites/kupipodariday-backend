@@ -42,7 +42,7 @@ export class Wish {
   @IsNumber()
   price: number;
 
-  @Column('decimal', { scale: 2 })
+  @Column('decimal', { scale: 2, default: 0 })
   @IsNumber()
   raised: number;
 
@@ -61,7 +61,7 @@ export class Wish {
   offers: Offer[];
 
   // Cодержит cчётчик тех, кто скопировал подарок себе. Целое десятичное число
-  @Column('integer')
+  @Column('integer', { default: 0 })
   @IsNumber()
   copied: number;
 

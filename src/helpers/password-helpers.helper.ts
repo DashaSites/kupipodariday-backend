@@ -11,8 +11,8 @@ export const encrypt = async (plainTextPassword: string) => {
 
 // Проверяю, что пароль верный
 export const matchPassword = async (
-  hashedPassword: string,
   plainTextPassword: string,
+  hashedPassword: string,
 ) => {
   return await compare(plainTextPassword, hashedPassword);
 };
