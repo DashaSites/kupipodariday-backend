@@ -25,7 +25,7 @@ export class AuthService {
     return null;
   }
 
-  // Авторизация при логине
+  // + Авторизация при логине
   async login(user: User) {
     const { username, id: sub } = user;
 

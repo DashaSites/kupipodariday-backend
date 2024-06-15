@@ -15,19 +15,20 @@ export class UsersController {
   ) {}
 
   // Кастомный декторатор @AuthUser надо использовать там, где нужна
-  // информация об авторизованном пользователе
+  // информация об авторизованном пользователе. Он возвращает объект пользователя
 
   @Get('all')
   getUsers(): Promise<User[]> {
     return this.usersService.getAllUsers();
   }
 
+  // + Возвращаю инфу о себе (авторизованном пользователе)
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async findOwn(@AuthUser() user: User): Promise<User> {
     // findOne - метод, описанный внутри сервиса UsersService
     return this.usersService.findOne({
-      where: { id: user.id },
+      where: { id: user.id }, // без @AuthUser было бы { id: req.user.id }
       select: {
         email: true,
         username: true,

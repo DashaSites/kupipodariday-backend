@@ -17,7 +17,7 @@ export class UsersService {
     return this.usersRepository.find({});
   }
 
-  // Регистрация
+  // + Регистрация
   async signup(createUserDto: CreateUserDto): Promise<User> {
     const { password } = createUserDto;
     const user = await this.usersRepository.create({
@@ -34,7 +34,7 @@ export class UsersService {
     return user;
   }
 
-  // Этот метод будет использоваться в методе контроллера findOwn
+  // + Этот метод используется в методе контроллера findOwn
   findOne(query: FindOneOptions<User>) {
     return this.usersRepository.findOneOrFail(query);
   }
