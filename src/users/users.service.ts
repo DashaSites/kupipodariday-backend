@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { encrypt } from 'src/helpers/password-helpers.helper';
@@ -53,12 +53,14 @@ export class UsersService {
     return this.usersRepository.save({ ...user, ...updateUserDto });
   }
 
-  async findUserByUsername(username: string): Promise<User> {
-    const user = await this.usersRepository.findOne({ // нужно обращаться к репозиторию?
-      where: {
-
-      }
+  async getUserWishes(username: string) {
+    const user = await this.findOne({
+      where: { username: ILike(username) },
+      select: { wishes: true },
+      relations: ['wishes', 'wishes.offers'],
     });
-    // здесь надо видимо использовать where и найти его по username
+    console.log(user);
+
+    return user.wishes;
   }
 }

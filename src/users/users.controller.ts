@@ -6,6 +6,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import { WishesService } from 'src/wishes/wishes.service';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { ILike } from 'typeorm';
 
 @Controller('users')
 export class UsersController {
@@ -26,7 +27,7 @@ export class UsersController {
   // + Возвращаю инфу о себе (авторизованном пользователе)
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  async findOwn(@AuthUser() user: User): Promise<User> {
+  async findOne(@AuthUser() user: User): Promise<User> {
     // findOne - метод, описанный внутри сервиса UsersService
     return this.usersService.findOne({
       where: { id: user.id }, // без @AuthUser было бы { id: req.user.id }
@@ -62,10 +63,28 @@ export class UsersController {
     return this.usersService.updateMyProfile(id, updateUserDto);
   }
 
-  // Найти профиль
+  // Найти профиль по имени пользователя
   @UseGuards(JwtAuthGuard)
   @Get(':username')
   findUserByUsername(@Param('username') username: string) {
-    return this.usersService.findUserByUsername(username);
+    return this.usersService.findOne({
+      // ILike делает typeorm-запросы нечувствительными к регистру
+      where: { username: ILike(username) },
+      select: {
+        id: true,
+        username: true,
+        avatar: true,
+        about: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+  }
+
+  // Найти все желания определенного пользователя
+  @UseGuards(JwtAuthGuard)
+  @Get(':username/wishes')
+  findUserWishesByUsername(@Param('username') username: string) {
+    return this.usersService.getUserWishes(username);
   }
 }

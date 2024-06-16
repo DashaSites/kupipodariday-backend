@@ -46,6 +46,9 @@ export class WishesService {
       description: wish.description,
     };
 
+    wish.copied++;
+    this.wishesRepository.save(wish);
+
     return this.create(createWishDto, userId);
   }
 }
