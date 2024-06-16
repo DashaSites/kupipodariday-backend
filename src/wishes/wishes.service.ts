@@ -13,7 +13,7 @@ export class WishesService {
     private readonly usersService: UsersService,
   ) {}
 
-  // Создать желание
+  // + Запостить желание
   async create(createWishDto: CreateWishDto, userId: number) {
     const owner = await this.usersService.findById(userId);
     console.log(userId, owner);
@@ -25,7 +25,7 @@ export class WishesService {
     return this.wishesRepository.save(wish);
   }
 
-  // Найдем массив всех желаний данного пользователя
+  // + Найдем массив всех желаний данного пользователя (например мои)
   async findWishById(ownerId: number) {
     return await this.wishesRepository.find({
       where: { owner: { id: ownerId } }, // массив будет искаться по полю owner

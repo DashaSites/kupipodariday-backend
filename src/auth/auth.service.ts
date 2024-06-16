@@ -34,15 +34,3 @@ export class AuthService {
     };
   }
 }
-
-/*
-  async signup(createUserDto: CreateUserDto): Promise<User> {
-    const { password } = createUserDto;
-    const user = await this.usersService.createUser({
-      ...createUserDto,
-      password: await encrypt(password),
-    });
-
-    return user;
-  }
-*/

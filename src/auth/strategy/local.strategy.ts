@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 import { AuthService } from '../auth.service';
 
-// Сервис-стратегия, которая обрабатывает первоначальное создание пользователя
+// Сервис-стратегия, которая обрабатывает регистрацию
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {

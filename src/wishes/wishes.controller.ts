@@ -8,6 +8,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
+  // + Запостить желание
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Body() createWishDto: CreateWishDto, @AuthUser() user) {

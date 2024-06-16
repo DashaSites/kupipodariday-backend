@@ -5,6 +5,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from 'src/users/users.service';
 
 // Сервис-стратегия для того, чтобы защитить мои контроллеры
+// guard'ом там, где юзер должен быть авторизован
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(

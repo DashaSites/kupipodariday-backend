@@ -13,6 +13,7 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
+  // + Нахожу всех пользователей
   getAllUsers(): Promise<User[]> {
     return this.usersRepository.find({});
   }
@@ -27,20 +28,22 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  // Этот метод будем использовать в методе авторизации
+  // + Этот метод используется в методе авторизации в JwtStrategy
   // (он полностью возвращает объект пользователя)
   async findById(id: number): Promise<User> {
     const user = await this.usersRepository.findOneBy({ id });
     return user;
   }
 
-  // + Этот метод используется в методе контроллера findOwn
+  // + Метод нахождения пользователя: используется в методе контроллера findOwn
+  // FindOneOptions - это специальный тип, который возвращает объект, соответствующий
+  // структуре с where и select из запроса
   findOne(query: FindOneOptions<User>) {
     return this.usersRepository.findOneOrFail(query);
   }
 
-  // Редактирование профайла пользователя
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  // + Редактирование профайла пользователя
+  async updateMyProfile(id: number, updateUserDto: UpdateUserDto) {
     const { password } = updateUserDto;
     const user = await this.findById(id);
     if (password) {
@@ -50,9 +53,12 @@ export class UsersService {
     return this.usersRepository.save({ ...user, ...updateUserDto });
   }
 
-  /*
-  createUser(user: DeepPartial<User>): Promise<User> {
-    return this.usersRepository.save(user);
+  async findUserByUsername(username: string): Promise<User> {
+    const user = await this.usersRepository.findOne({ // нужно обращаться к репозиторию?
+      where: {
+
+      }
+    });
+    // здесь надо видимо использовать where и найти его по username
   }
-  */
 }

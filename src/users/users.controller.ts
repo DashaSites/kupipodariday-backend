@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { AuthUser } from 'src/utils/decorators/user.decorator';
@@ -17,6 +17,7 @@ export class UsersController {
   // Кастомный декторатор @AuthUser надо использовать там, где нужна
   // информация об авторизованном пользователе. Он возвращает объект пользователя
 
+  // + Нахожу всех пользователей
   @Get('all')
   getUsers(): Promise<User[]> {
     return this.usersService.getAllUsers();
@@ -41,18 +42,30 @@ export class UsersController {
     });
   }
 
+  // Вернуть все мои желания
+  @UseGuards(JwtAuthGuard)
   @Get('me/wishes')
   async findMyWishes(@AuthUser() user: User): Promise<Wish[]> {
     return await this.wishesService.findWishById(user.id);
   }
 
+  // + Редактировать мой профиль
+  @UseGuards(JwtAuthGuard)
   @Patch('me')
   // @UseFilters(EntityNotFoundFilter)
-  async updateOne(
+  async updateMyProfile(
     @AuthUser() user: User,
     @Body() updateUserDto: UpdateUserDto,
   ) {
+    console.log(user);
     const { id } = user;
-    return this.usersService.update(id, updateUserDto);
+    return this.usersService.updateMyProfile(id, updateUserDto);
+  }
+
+  // Найти профиль
+  @UseGuards(JwtAuthGuard)
+  @Get(':username')
+  findUserByUsername(@Param('username') username: string) {
+    return this.usersService.findUserByUsername(username);
   }
 }

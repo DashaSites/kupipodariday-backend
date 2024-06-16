@@ -13,7 +13,7 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) {}
 
-  // Авторизация
+  // + Авторизация (логин)
   @UseGuards(LocalAuthGuard)
   @Post('signin')
   login(@AuthUser() user): Promise<any> {
@@ -22,7 +22,7 @@ export class AuthController {
     return this.authService.login(user);
   }
 
-  // Регистрация:
+  // + Регистрация:
   // получаю данные, создаю пользователя и возвращаю его с обновленным паролем
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
@@ -30,11 +30,4 @@ export class AuthController {
     // return instanceToPlain(user); // непонятно, зачем нужна эта конвертация
     return user;
   }
-
-  /*
-  @Post('signup')
-  signUp(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.authService.signup(createUserDto);
-  }
-  */
 }
