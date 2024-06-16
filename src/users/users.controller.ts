@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { AuthUser } from 'src/utils/decorators/user.decorator';
@@ -63,7 +71,7 @@ export class UsersController {
     return this.usersService.updateMyProfile(id, updateUserDto);
   }
 
-  // Найти профиль по имени пользователя
+  // + Найти профиль по имени пользователя
   @UseGuards(JwtAuthGuard)
   @Get(':username')
   findUserByUsername(@Param('username') username: string) {
@@ -73,18 +81,25 @@ export class UsersController {
       select: {
         id: true,
         username: true,
-        avatar: true,
         about: true,
+        avatar: true,
         createdAt: true,
         updatedAt: true,
       },
     });
   }
 
-  // Найти все желания определенного пользователя
+  // + Найти все желания пользователя с таким-то именем
   @UseGuards(JwtAuthGuard)
   @Get(':username/wishes')
   findUserWishesByUsername(@Param('username') username: string) {
     return this.usersService.getUserWishes(username);
+  }
+
+  // + Поиск многих пользователей по username или email
+  @UseGuards(JwtAuthGuard)
+  @Post('find')
+  findUserByUsernameOrEmail(@Body('query') query: string) {
+    return this.usersService.findMany(query);
   }
 }

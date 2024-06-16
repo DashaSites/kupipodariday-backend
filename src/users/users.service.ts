@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { encrypt } from 'src/helpers/password-helpers.helper';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { Wish } from 'src/wishes/entities/wish.entity';
 
 @Injectable()
 export class UsersService {
@@ -53,14 +54,30 @@ export class UsersService {
     return this.usersRepository.save({ ...user, ...updateUserDto });
   }
 
-  async getUserWishes(username: string) {
+  // + Найти все желания пользователя c таким-то именем
+  async getUserWishes(username: string): Promise<Wish[]> {
     const user = await this.findOne({
       where: { username: ILike(username) },
       select: { wishes: true },
-      relations: ['wishes', 'wishes.offers'],
+      relations: ['wishes'],
     });
-    console.log(user);
+
+    if (!user) {
+      throw new Error('Requested user was not found');
+    }
 
     return user.wishes;
+  }
+
+  // + Поиск многих пользователей по username или email
+  async findMany(query: string): Promise<User[]> {
+    const users = await this.usersRepository.find({
+      where: [{ username: ILike(query) }, { email: ILike(query) }],
+    });
+
+    if (!users) {
+      throw new Error('Requested user was not found');
+    }
+    return users;
   }
 }
