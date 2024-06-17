@@ -54,11 +54,22 @@ export class UsersService {
     return this.usersRepository.save({ ...user, ...updateUserDto });
   }
 
+  // + Найти все желания авторизованного пользователя
+  async getMyWishes(userId: number): Promise<Wish[]> {
+    const currentUser = await this.usersRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['wishes'],
+    });
+    return currentUser.wishes;
+  }
+
   // + Найти все желания пользователя c таким-то именем
-  async getUserWishes(username: string): Promise<Wish[]> {
+  async getUserWishesByUsername(username: string): Promise<Wish[]> {
     const user = await this.findOne({
       where: { username: ILike(username) },
-      select: { wishes: true },
+      // select: { wishes: true },
       relations: ['wishes'],
     });
 

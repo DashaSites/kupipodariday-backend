@@ -12,7 +12,7 @@ import { User } from './entities/user.entity';
 import { AuthUser } from 'src/utils/decorators/user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Wish } from 'src/wishes/entities/wish.entity';
-import { WishesService } from 'src/wishes/wishes.service';
+// import { WishesService } from 'src/wishes/wishes.service';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { ILike } from 'typeorm';
 
@@ -20,7 +20,7 @@ import { ILike } from 'typeorm';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    private readonly wishesService: WishesService,
+    // private readonly wishesService: WishesService,
   ) {}
 
   // Кастомный декторатор @AuthUser надо использовать там, где нужна
@@ -32,13 +32,13 @@ export class UsersController {
     return this.usersService.getAllUsers();
   }
 
-  // + Возвращаю инфу о себе (авторизованном пользователе)
+  // + Смотреть инфу о себе (авторизованном пользователе)
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async findOne(@AuthUser() user: User): Promise<User> {
     // findOne - метод, описанный внутри сервиса UsersService
     return this.usersService.findOne({
-      where: { id: user.id }, // без @AuthUser было бы { id: req.user.id }
+      where: { id: user.id }, // а без @AuthUser было бы { id: req.user.id }
       select: {
         email: true,
         username: true,
@@ -55,7 +55,8 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('me/wishes')
   async findMyWishes(@AuthUser() user: User): Promise<Wish[]> {
-    return await this.wishesService.findWishById(user.id);
+    const userId = user.id;
+    return await this.usersService.getMyWishes(userId);
   }
 
   // + Редактировать мой профиль
@@ -93,7 +94,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get(':username/wishes')
   findUserWishesByUsername(@Param('username') username: string) {
-    return this.usersService.getUserWishes(username);
+    return this.usersService.getUserWishesByUsername(username);
   }
 
   // + Поиск многих пользователей по username или email

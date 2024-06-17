@@ -1,35 +1,43 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
 import { UsersService } from 'src/users/users.service';
 import { CreateWishDto } from './dto/create-wish.dto';
+// import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class WishesService {
   constructor(
     @InjectRepository(Wish)
     private readonly wishesRepository: Repository<Wish>,
+    // @InjectRepository(User)
     private readonly usersService: UsersService,
   ) {}
 
+  findOne(query: FindOneOptions<Wish>) {
+    return this.wishesRepository.findOneOrFail(query);
+  }
+
   // + Запостить желание
-  async create(createWishDto: CreateWishDto, userId: number) {
-    const owner = await this.usersService.findById(userId);
-    console.log(userId, owner);
+  async create(createWishDto: CreateWishDto, userId: number): Promise<Wish> {
+    const userOwner = await this.usersService.findById(userId);
+    console.log(userId, userOwner);
     const wish = await this.wishesRepository.create({
       ...createWishDto,
-      owner,
+      owner: userOwner,
     });
 
     return this.wishesRepository.save(wish);
   }
 
-  // + Найдем массив всех желаний данного пользователя (например мои)
-  async findWishById(ownerId: number) {
-    return await this.wishesRepository.find({
-      where: { owner: { id: ownerId } }, // массив будет искаться по полю owner
-      relations: ['owner'],
+  // + Найти желание по его id
+  async getWishByWishId(wishId: number) {
+    return await this.wishesRepository.findOne({
+      where: { id: wishId }, // желание будет искаться по его айди
+      // через слова-связки подтягиваю "владельца" желания (все его поля)
+      // и тех, кто предложил скинуться на подарок
+      relations: ['owner', 'offers'],
     });
   }
 
