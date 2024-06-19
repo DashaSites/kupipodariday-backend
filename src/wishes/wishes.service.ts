@@ -64,11 +64,40 @@ export class WishesService {
     });
   }
 
-  async updateOne(updateWishDto: UpdateWishDto, wishId: number) {
-    
+  // + Редактировать желание
+  async updateWish(
+    wishId: number,
+    updateWishDto: UpdateWishDto,
+    userId: number,
+  ): Promise<Wish> {
+    const wish = await this.wishesRepository.findOne({
+      where: {
+        id: wishId,
+      },
+      relations: ['owner'],
+    });
+
+    if (!wish || !wish.owner) {
+      throw new Error('Requested wish or its owner was not found');
+    }
+    if (userId !== wish.owner.id) {
+      throw new Error('Requested wish was created by another user');
+    }
+    if (wish.raised > 0) {
+      throw new Error(
+        'The price cannot be changed as someone is already willing to make you this present',
+      );
+    }
+
+    const updatedWish = this.wishesRepository.save({
+      ...wish,
+      ...updateWishDto,
+    });
+
+    return updatedWish;
   }
 
-  // Скопировать к себе желание
+  // + Скопировать к себе желание
   async copy(wishId: number, userId: number) {
     const wish = await this.wishesRepository.findOneOrFail({
       where: { id: wishId },

@@ -12,6 +12,7 @@ import { AuthUser } from 'src/utils/decorators/user.decorator';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { UpdateWishDto } from './dto/update-wish.dto';
+import { User } from 'src/users/entities/user.entity';
 
 @Controller('wishes')
 export class WishesController {
@@ -52,8 +53,13 @@ export class WishesController {
   // !!! Сделать
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  updateWishById(@Body() updateWishDto: UpdateWishDto, @AuthUser() user) {
-    return this.wishesService.updateOne(updateWishDto, user.id);
+  updateWishById(
+    @Param('id') id: number,
+    @Body() updateWishDto: UpdateWishDto,
+    @AuthUser() user: User,
+  ) {
+    const userId = user.id;
+    return this.wishesService.updateWish(id, updateWishDto, userId);
   }
 
   // !!! Сделать
