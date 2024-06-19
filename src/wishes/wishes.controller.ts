@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -43,14 +44,14 @@ export class WishesController {
     return this.wishesService.getWishByWishId(id);
   }
 
-  // Копирует желание к себе
+  // + Копировать желание к себе
   @Post(':id/copy')
   @UseGuards(JwtAuthGuard)
   copy(@Param() params: any, @AuthUser() user) {
     return this.wishesService.copy(params.id, user.id);
   }
 
-  // !!! Сделать
+  // + Редактировать желание
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   updateWishById(
@@ -62,6 +63,11 @@ export class WishesController {
     return this.wishesService.updateWish(id, updateWishDto, userId);
   }
 
-  // !!! Сделать
-  // @Delete()
+  // + Удалить желание
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  deleteWishById(@Param('id') id: number, @AuthUser() user: User) {
+    const userId = user.id;
+    return this.wishesService.deleteWish(id, userId);
+  }
 }

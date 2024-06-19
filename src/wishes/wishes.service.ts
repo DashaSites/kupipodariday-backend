@@ -12,7 +12,6 @@ export class WishesService {
   constructor(
     @InjectRepository(Wish)
     private readonly wishesRepository: Repository<Wish>,
-    // @InjectRepository(User)
     private readonly usersService: UsersService,
   ) {}
 
@@ -81,7 +80,9 @@ export class WishesService {
       throw new Error('Requested wish or its owner was not found');
     }
     if (userId !== wish.owner.id) {
-      throw new Error('Requested wish was created by another user');
+      throw new Error(
+        'You have no permission to update a wish that was created by another user',
+      );
     }
     if (wish.raised > 0) {
       throw new Error(
@@ -95,6 +96,27 @@ export class WishesService {
     });
 
     return updatedWish;
+  }
+
+  // + Удалить желание
+  async deleteWish(wishId: number, userId: number): Promise<Wish> {
+    const wish = await this.wishesRepository.findOne({
+      where: {
+        id: wishId,
+      },
+      relations: ['owner', 'offers', 'wishlists'],
+    });
+
+    if (!wish) {
+      throw new Error('Requested wish was not found');
+    }
+    if (wish.owner.id !== userId) {
+      throw new Error(
+        'You have no permission to delete a wish that was created by another user',
+      );
+    }
+
+    return this.wishesRepository.remove(wish);
   }
 
   // + Скопировать к себе желание

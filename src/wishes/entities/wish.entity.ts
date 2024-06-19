@@ -11,6 +11,7 @@ import {
   ManyToOne,
   OneToMany,
   ManyToMany,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -67,5 +68,6 @@ export class Wish {
 
   // Ссылка на все вишлисты, где фигурирует желание
   @ManyToMany(() => Wishlist, (wishlist) => wishlist.items)
+  @JoinTable()
   wishlists: Wishlist[];
 }
