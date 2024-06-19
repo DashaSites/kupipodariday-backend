@@ -34,9 +34,6 @@ export class Offer {
   @JoinTable()
   user: User;
 
-  // @ManyToOne(() => User, (user) => user.id)
-  // user: User;
-
   @ManyToOne(() => Wish, (wish) => wish.offers)
   @JoinTable()
   item: Wish;

@@ -5,7 +5,6 @@ import { Wish } from './entities/wish.entity';
 import { UsersService } from 'src/users/users.service';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
-// import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class WishesService {
@@ -136,5 +135,9 @@ export class WishesService {
     this.wishesRepository.save(wish);
 
     return this.create(createWishDto, userId);
+  }
+
+  async updateWishWithOffer(id: number, amount: number) {
+    return await this.wishesRepository.update({ id }, { raised: amount });
   }
 }

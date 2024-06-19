@@ -2,44 +2,71 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Offer } from './entities/offer.entity';
-// import { CreateOfferDto } from './dto/create-offer.dto';
-import { Wish } from 'src/wishes/entities/wish.entity';
-import { User } from 'src/users/entities/user.entity';
+// import { Wish } from 'src/wishes/entities/wish.entity';
+// import { User } from 'src/users/entities/user.entity';
+import { CreateOfferDto } from './dto/create-offer.dto';
+import { UsersService } from 'src/users/users.service';
+import { WishesService } from 'src/wishes/wishes.service';
 
 @Injectable()
 export class OffersService {
   constructor(
     @InjectRepository(Offer)
     private readonly offersRepository: Repository<Offer>,
-    @InjectRepository(Wish)
-    private readonly wishesRepository: Repository<Wish>,
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    private readonly usersService: UsersService,
+    private readonly wishesService: WishesService,
   ) {}
 
-  // async create(createOfferDto: CreateOfferDto, userId: number) {
-  //   const { amount, itemId } = createOfferDto;
+  // + Зафандрейзить подарок
+  async createOffer(createOfferDto: CreateOfferDto, userId: number) {
+    const { amount, itemId } = createOfferDto;
 
-  //   const owner = await this.usersService.findById(userId); // из токена достаю пользователя
-  //   const wish = await this.wishesService.findById(itemId); // из тела запроса достаю wish
+    // достаю пользователя, который хочет сделать оффер
+    const offerGiver = await this.usersService.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['offers'],
+    });
 
-  //   const raised = wish.raised + amount;
+    // достаю wish из тела запроса
+    const wish = await this.wishesService.findOne({
+      where: {
+        id: itemId,
+      },
+      relations: ['owner', 'offers'],
+    });
 
-  //   if (raised > wish.price) {
-  //     throw new Error('The offer amount is more than the amount left to raise');
-  //   }
+    if (!wish) {
+      throw new Error('Requested wish was not found');
+    }
+    if (wish.owner.id === userId) {
+      throw new Error('An offer for your own wish cannot be submitted');
+    }
+    if (amount > wish.price) {
+      throw new Error('Your offer cannot exceed the price of the wish');
+    }
+    if (amount > Number(wish.price) - Number(wish.raised)) {
+      throw new Error(
+        'Your offer cannot exceed the sum that needs to be raised',
+      );
+    }
+    if (wish.price === wish.raised) {
+      throw new Error('The required sum has already been raised, thank you');
+    }
 
-  //   wish.raised += amount;
+    // обновляю поле raised у подарка
+    await this.wishesService.updateWishWithOffer(
+      wish.id,
+      Number(amount) + Number(wish.raised),
+    );
 
-  //   await this.wishesService.set(itemId, { raised });
-
-  //   return this.offersRepository.save({
-  //     ...createOfferDto,
-  //     owner,
-  //     amount,
-  //     item: wish,
-  //   });
-  // }
+    return await this.offersRepository.save({
+      ...createOfferDto,
+      user: offerGiver,
+      item: wish,
+    });
+  }
 
   // findMany(query: FindManyOptions<Offer>) {
   //   return this.offerRepository.find(query);
