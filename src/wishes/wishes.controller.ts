@@ -1,8 +1,17 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { WishesService } from './wishes.service';
 import { AuthUser } from 'src/utils/decorators/user.decorator';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { UpdateWishDto } from './dto/update-wish.dto';
 
 @Controller('wishes')
 export class WishesController {
@@ -14,13 +23,13 @@ export class WishesController {
   create(@Body() createWishDto: CreateWishDto, @AuthUser() user) {
     return this.wishesService.create(createWishDto, user.id);
   }
-  // Возвращает список из 40 подарков, добавленных недавно
+  // + Возвращает список из 40 подарков, добавленных недавно
   @Get('last')
   findLastWishes() {
     return this.wishesService.getLastWishes();
   }
 
-  // Возвращает 20 подарков, которые копируют в свой профиль чаще всего
+  // + Возвращает 20 подарков, которые копируют в свой профиль чаще всего
   @Get('top')
   findTopWishes() {
     return this.wishesService.getTopWishes();
@@ -33,15 +42,20 @@ export class WishesController {
     return this.wishesService.getWishByWishId(id);
   }
 
+  // Копирует желание к себе
   @Post(':id/copy')
   @UseGuards(JwtAuthGuard)
   copy(@Param() params: any, @AuthUser() user) {
     return this.wishesService.copy(params.id, user.id);
   }
 
-  // @Get()
+  // !!! Сделать
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  updateWishById(@Body() updateWishDto: UpdateWishDto, @AuthUser() user) {
+    return this.wishesService.updateOne(updateWishDto, user.id);
+  }
 
-  // @Patch()
-
+  // !!! Сделать
   // @Delete()
 }

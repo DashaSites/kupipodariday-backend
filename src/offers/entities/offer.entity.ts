@@ -8,6 +8,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -29,9 +30,14 @@ export class Offer {
   @IsBoolean()
   hidden: boolean;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.offers)
+  @JoinTable()
   user: User;
 
+  // @ManyToOne(() => User, (user) => user.id)
+  // user: User;
+
   @ManyToOne(() => Wish, (wish) => wish.offers)
+  @JoinTable()
   item: Wish;
 }
