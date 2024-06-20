@@ -6,11 +6,11 @@ import { AuthUser } from 'src/utils/decorators/user.decorator';
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { User } from 'src/users/entities/user.entity';
 
-@Controller('wishlists')
+@Controller('wishlistlists')
 export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
-  // Создать вишлист
+  // + Создать вишлист
   @Post()
   @UseGuards(JwtAuthGuard)
   createWishlist(
@@ -20,14 +20,14 @@ export class WishlistsController {
     return this.wishlistsService.create(createWishlistDto, user);
   }
 
-  // Все вишлисты
+  // + Все вишлисты
   @Get()
   @UseGuards(JwtAuthGuard)
   findAllWishlists(): Promise<Wishlist[]> {
     return this.wishlistsService.getAllWishlists();
   }
 
-  // @Get()
+  
 
   // @Patch()
 

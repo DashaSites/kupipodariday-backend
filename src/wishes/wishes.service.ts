@@ -140,4 +140,14 @@ export class WishesService {
   async updateWishWithOffer(id: number, amount: number) {
     return await this.wishesRepository.update({ id }, { raised: amount });
   }
+
+  // Вернуть желания по их id
+  async getWishesArrayByWishesId(ids: number[]) {
+    const wishesArray = [];
+
+    for (const id of ids) {
+      wishesArray.push(await this.getWishByWishId(id));
+    }
+    return wishesArray;
+  }
 }

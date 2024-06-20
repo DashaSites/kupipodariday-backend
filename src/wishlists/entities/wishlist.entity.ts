@@ -30,7 +30,7 @@ export class Wishlist {
   })
   name: string;
 
-  @Column()
+  @Column({ default: 'My new wishlist' })
   @MaxLength(1500, {
     message: 'Wishlist description can be maximum 1500 characters',
   })
@@ -40,10 +40,16 @@ export class Wishlist {
   @IsUrl()
   image: string;
 
+  // @ManyToMany(() => Wish)
+  // @JoinTable()
+  // items: Wish[];
+
+  //
   @ManyToMany(() => Wish, (wish) => wish.wishlists)
   @JoinTable()
   items: Wish[];
+  //
 
-  @ManyToOne(() => User, (user) => user.wishlists)
+  @ManyToOne(() => User)
   owner: User;
 }
