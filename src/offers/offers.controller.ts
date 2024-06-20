@@ -17,15 +17,17 @@ export class OffersController {
     return this.offersService.createOffer(createOfferDto, user.id);
   }
 
-  @Get(':id')
-  @UseGuards(JwtAuthGuard)
-  findOfferByOfferId(@Param('id') id: number) {
-    return this.offersService.findOfferById(id);
-  }
-
+  // + Все офферы
   @Get()
   @UseGuards(JwtAuthGuard)
   findAllOffers() {
     return this.offersService.getAllOffers();
+  }
+
+  // + Найти один по id
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  findOfferByOfferId(@Param('id') id: number) {
+    return this.offersService.findOfferById(id);
   }
 }

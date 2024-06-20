@@ -2,8 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Offer } from './entities/offer.entity';
-// import { Wish } from 'src/wishes/entities/wish.entity';
-// import { User } from 'src/users/entities/user.entity';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UsersService } from 'src/users/users.service';
 import { WishesService } from 'src/wishes/wishes.service';
@@ -68,10 +66,7 @@ export class OffersService {
     });
   }
 
-  // findMany(query: FindManyOptions<Offer>) {
-  //   return this.offerRepository.find(query);
-  // }
-
+  // + Все офферы
   async getAllOffers(): Promise<Offer[]> {
     const offers = await this.offersRepository.find({
       relations: ['user'],
@@ -79,10 +74,7 @@ export class OffersService {
     return offers;
   }
 
-  // findOne(query: any) {
-  //   return this.offerRepository.findOneOrFail(query);
-  // }
-
+  // + Найти оффер по id
   async findOfferById(offerId: number): Promise<Offer> {
     const offer = this.offersRepository.findOne({
       where: { id: offerId },
@@ -93,9 +85,5 @@ export class OffersService {
     }
 
     return offer;
-  }
-
-  findById(id: number) {
-    return this.offersRepository.findOneOrFail({ where: { id } });
   }
 }
