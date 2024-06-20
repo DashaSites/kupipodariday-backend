@@ -1,4 +1,4 @@
-import { IsUrl, Length, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsUrl, Length, MaxLength } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import {
@@ -9,6 +9,7 @@ import {
   UpdateDateColumn,
   ManyToMany,
   ManyToOne,
+  JoinTable,
 } from 'typeorm';
 
 @Entity()
@@ -23,6 +24,7 @@ export class Wishlist {
   updatedAt: Date;
 
   @Column()
+  @IsNotEmpty()
   @Length(1, 250, {
     message: 'Wishlist name needs to be between 1 and 250 characters',
   })
@@ -38,10 +40,10 @@ export class Wishlist {
   @IsUrl()
   image: string;
 
-  @ManyToMany(() => Wish)
-  // ??
+  @ManyToMany(() => Wish, (wish) => wish.wishlists)
+  @JoinTable()
   items: Wish[];
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, (user) => user.wishlists)
   owner: User;
 }
