@@ -20,11 +20,7 @@ import { ILike } from 'typeorm';
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
-    // private readonly wishesService: WishesService,
   ) {}
-
-  // Кастомный декторатор @AuthUser надо использовать там, где нужна
-  // информация об авторизованном пользователе. Он возвращает объект пользователя
 
   // + Нахожу всех пользователей
   @Get('all')
@@ -62,7 +58,6 @@ export class UsersController {
   // + Редактировать мой профиль
   @UseGuards(JwtAuthGuard)
   @Patch('me')
-  // @UseFilters(EntityNotFoundFilter)
   async updateMyProfile(
     @AuthUser() user: User,
     @Body() updateUserDto: UpdateUserDto,
@@ -77,7 +72,6 @@ export class UsersController {
   @Get(':username')
   findUserByUsername(@Param('username') username: string) {
     return this.usersService.findOne({
-      // ILike делает typeorm-запросы нечувствительными к регистру
       where: { username: ILike(username) },
       select: {
         id: true,

@@ -5,12 +5,11 @@ export class CreateWishlistDto {
   name: string;
 
   @IsOptional()
-  description: string;
+  description?: string;
 
   @IsUrl()
   image: string;
 
   @IsArray()
-  @IsNotEmpty()
   itemsId: number[];
 }

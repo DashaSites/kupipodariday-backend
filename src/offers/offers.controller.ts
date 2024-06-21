@@ -3,14 +3,12 @@ import { OffersService } from './offers.service';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { AuthUser } from 'src/utils/decorators/user.decorator';
-// import { CreateOfferDto } from './dto/create-offer.dto';
-// import { AuthUser } from 'src/utils/decorators/user.decorator';
 
 @Controller('offers')
 export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
-  // + Зафандрейзить подарок
+  // + Скинуться на подарок
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Body() createOfferDto: CreateOfferDto, @AuthUser() user) {
@@ -24,7 +22,7 @@ export class OffersController {
     return this.offersService.getAllOffers();
   }
 
-  // + Найти один по id
+  // + Найти один оффер по id
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   findOfferByOfferId(@Param('id') id: number) {

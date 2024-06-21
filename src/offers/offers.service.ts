@@ -15,7 +15,7 @@ export class OffersService {
     private readonly wishesService: WishesService,
   ) {}
 
-  // + Зафандрейзить подарок
+  // + Скинуться на подарок
   async createOffer(createOfferDto: CreateOfferDto, userId: number) {
     const { amount, itemId } = createOfferDto;
 

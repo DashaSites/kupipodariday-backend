@@ -18,7 +18,7 @@ export class WishesService {
     return this.wishesRepository.findOneOrFail(query);
   }
 
-  // + Запостить желание
+  // + Добавить подарок
   async create(createWishDto: CreateWishDto, userId: number): Promise<Wish> {
     const userOwner = await this.usersService.findById(userId);
     console.log(userId, userOwner);
@@ -52,7 +52,7 @@ export class WishesService {
     return topWishes;
   }
 
-  // + Найти желание по его id
+  // + Найти подарок по его id
   async getWishByWishId(wishId: number) {
     return await this.wishesRepository.findOne({
       where: { id: wishId }, // желание будет искаться по его айди
@@ -149,5 +149,10 @@ export class WishesService {
       wishesArray.push(await this.getWishByWishId(id));
     }
     return wishesArray;
+  }
+
+  // Вернуть список желаний
+  async getWishesList(item): Promise<Wish[]> {
+    return await this.wishesRepository.findBy(item);
   }
 }

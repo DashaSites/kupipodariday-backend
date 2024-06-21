@@ -19,19 +19,19 @@ import { User } from 'src/users/entities/user.entity';
 export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
-  // + Запостить желание
+  // + Добавить подарок
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@Body() createWishDto: CreateWishDto, @AuthUser() user) {
     return this.wishesService.create(createWishDto, user.id);
   }
-  // + Возвращает список из 40 подарков, добавленных недавно
+  // + Вернуть 40 недавно добавленных подарков
   @Get('last')
   findLastWishes() {
     return this.wishesService.getLastWishes();
   }
 
-  // + Возвращает 20 подарков, которые копируют в свой профиль чаще всего
+  // + Вернуть 20 подарков, которые копируют больше всего
   @Get('top')
   findTopWishes() {
     return this.wishesService.getTopWishes();
