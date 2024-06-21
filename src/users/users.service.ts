@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { FindOneOptions, ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -43,6 +43,24 @@ export class UsersService {
     return this.usersRepository.findOneOrFail(query);
   }
 
+  async getUserByUsername(username: string): Promise<User> {
+    const user = this.findOne({
+      where: { username: ILike(username) },
+      select: {
+        id: true,
+        username: true,
+        about: true,
+        avatar: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    if (!user) {
+      throw new NotFoundException('Requested user was not found');
+    }
+    return user;
+  }
+
   // + Редактирование профайла пользователя
   async updateMyProfile(id: number, updateUserDto: UpdateUserDto) {
     const { password } = updateUserDto;
@@ -62,6 +80,9 @@ export class UsersService {
       },
       relations: ['wishes'],
     });
+    if (currentUser && (!currentUser.wishes)) {
+      throw new NotFoundException('No wishes were added so far');
+    }
     return currentUser.wishes;
   }
 
@@ -69,12 +90,11 @@ export class UsersService {
   async getUserWishesByUsername(username: string): Promise<Wish[]> {
     const user = await this.findOne({
       where: { username: ILike(username) },
-      // select: { wishes: true },
       relations: ['wishes'],
     });
 
     if (!user) {
-      throw new Error('Requested user was not found');
+      throw new NotFoundException('Requested user was not found');
     }
 
     return user.wishes;
@@ -87,7 +107,7 @@ export class UsersService {
     });
 
     if (!users) {
-      throw new Error('Requested user was not found');
+      throw new NotFoundException('No users were found');
     }
     return users;
   }

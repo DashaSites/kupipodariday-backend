@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { FindOneOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
@@ -76,16 +76,16 @@ export class WishesService {
     });
 
     if (!wish || !wish.owner) {
-      throw new Error('Requested wish or its owner was not found');
+      throw new NotFoundException('Requested wish or its owner was not found');
     }
     if (userId !== wish.owner.id) {
-      throw new Error(
+      throw new ForbiddenException(
         'You have no permission to update a wish that was created by another user',
       );
     }
     if (wish.raised > 0) {
-      throw new Error(
-        'The price cannot be changed as someone is already willing to make you this present',
+      throw new ForbiddenException(
+        'Price cannot be changed as someone has already supported this wish',
       );
     }
 
@@ -107,11 +107,11 @@ export class WishesService {
     });
 
     if (!wish) {
-      throw new Error('Requested wish was not found');
+      throw new NotFoundException('Requested wish was not found');
     }
     if (wish.owner.id !== userId) {
-      throw new Error(
-        'You have no permission to delete a wish that was created by another user',
+      throw new ForbiddenException(
+        'You cannot delete this wish because it was created by another user',
       );
     }
 

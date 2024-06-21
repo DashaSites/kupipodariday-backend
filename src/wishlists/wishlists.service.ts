@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wishlist } from './entities/wishlist.entity';
@@ -22,7 +22,7 @@ export class WishlistsService {
     console.log(myWishes);
 
     if (myWishes?.length === 0) {
-      throw new Error('A wishlist has to contain wishes in order to be created');
+      throw new ForbiddenException('A wishlist has to contain wishes in order to be created');
     }
 
     const myWishlist = await this.wishlistsRepository.save({
@@ -51,7 +51,7 @@ export class WishlistsService {
       relations: ['items', 'owner']
     });
     if (!wishlist) {
-      throw new Error('Requested wishlist was not found');
+      throw new NotFoundException('Requested wishlist was not found');
     }
     return wishlist;
   }
@@ -65,10 +65,10 @@ export class WishlistsService {
       relations: ['items', 'owner']
     });
     if (!wishlist) {
-      throw new Error('Requested wishlist was not found');
+      throw new NotFoundException('Requested wishlist was not found');
     }
     if (wishlist.owner.id !== userId) {
-      throw new Error('Requested wishlist was created by another user and cannot be edited');
+      throw new ForbiddenException('Requested wishlist was created by another user and cannot be edited');
     }
     
     // вытаскиваю обновленный список желаний
@@ -90,10 +90,10 @@ export class WishlistsService {
     const wishlist = await this.getWishlistById(wishlistId);
 
     if (!wishlist) {
-      throw new Error('Requested wishlist was not found');
+      throw new NotFoundException('Requested wishlist was not found');
     }
     if (wishlist.owner.id !== userId) {
-      throw new Error('Requested wishlist was created by another user and cannot be deleted');
+      throw new ForbiddenException('Requested wishlist was created by another user and cannot be deleted');
     }
     return await this.wishlistsRepository.remove(wishlist);
   }

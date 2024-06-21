@@ -12,7 +12,6 @@ import { User } from './entities/user.entity';
 import { AuthUser } from 'src/utils/decorators/user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Wish } from 'src/wishes/entities/wish.entity';
-// import { WishesService } from 'src/wishes/wishes.service';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { ILike } from 'typeorm';
 
@@ -47,7 +46,7 @@ export class UsersController {
     });
   }
 
-  // Вернуть все мои желания
+  // + Вернуть все мои желания
   @UseGuards(JwtAuthGuard)
   @Get('me/wishes')
   async findMyWishes(@AuthUser() user: User): Promise<Wish[]> {
@@ -71,17 +70,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get(':username')
   findUserByUsername(@Param('username') username: string) {
-    return this.usersService.findOne({
-      where: { username: ILike(username) },
-      select: {
-        id: true,
-        username: true,
-        about: true,
-        avatar: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
+    return this.usersService.getUserByUsername(username);
   }
 
   // + Найти все желания пользователя с таким-то именем

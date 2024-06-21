@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Offer } from './entities/offer.entity';
@@ -36,21 +36,21 @@ export class OffersService {
     });
 
     if (!wish) {
-      throw new Error('Requested wish was not found');
+      throw new NotFoundException('Requested wish was not found');
     }
     if (wish.owner.id === userId) {
-      throw new Error('An offer for your own wish cannot be submitted');
+      throw new ForbiddenException('An offer for your own wish cannot be submitted');
     }
     if (amount > wish.price) {
-      throw new Error('Your offer cannot exceed the price of the wish');
+      throw new ForbiddenException('Your offer cannot exceed the price of the wish');
     }
     if (amount > Number(wish.price) - Number(wish.raised)) {
-      throw new Error(
-        'Your offer cannot exceed the sum that needs to be raised',
+      throw new ForbiddenException(
+        'You cannot offer more than the sum that needs to be raised',
       );
     }
     if (wish.price === wish.raised) {
-      throw new Error('The required sum has already been raised, thank you');
+      throw new ForbiddenException('The required sum has already been raised, thank you');
     }
 
     // обновляю поле raised у подарка
@@ -81,7 +81,7 @@ export class OffersService {
       relations: ['user', 'item'],
     });
     if (!offer) {
-      throw new Error('Requested offer was not found');
+      throw new NotFoundException('Requested offer was not found');
     }
 
     return offer;

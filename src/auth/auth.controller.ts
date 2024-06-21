@@ -27,7 +27,6 @@ export class AuthController {
   @Post('signup')
   async signup(@Body() createUserDto: CreateUserDto) {
     const user = await this.usersService.signup(createUserDto);
-    // return instanceToPlain(user); // непонятно, зачем нужна эта конвертация
     return user;
   }
 }
