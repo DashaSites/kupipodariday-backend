@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { FindOneOptions, ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -21,7 +21,26 @@ export class UsersService {
 
   // + Регистрация
   async signup(createUserDto: CreateUserDto): Promise<User> {
-    const { password } = createUserDto;
+    const { username, email, password } = createUserDto;
+
+    const userWithExistingEmail = await this.usersRepository.findOne({
+      where: { email },
+    });
+    const userWithExistingUsername = await this.usersRepository.findOne({
+      where: { username },
+    });
+
+    if (userWithExistingEmail && userWithExistingUsername) {
+      throw new ConflictException('This email and this username already belong to someone else');
+    }
+    if (userWithExistingEmail) {
+      throw new ConflictException('User with this email already exists');
+    }
+
+    if (userWithExistingUsername) {
+      throw new ConflictException('User with this username already exists');
+    }
+
     const user = await this.usersRepository.create({
       ...createUserDto,
       password: await encrypt(password),
@@ -63,8 +82,27 @@ export class UsersService {
 
   // + Редактирование профайла пользователя
   async updateMyProfile(id: number, updateUserDto: UpdateUserDto) {
-    const { password } = updateUserDto;
+    const { password, email, username } = updateUserDto;
+
     const user = await this.findById(id);
+
+    if (email && email !== user.email) {
+      const userWithExistingEmail = await this.usersRepository.findOne({ 
+        where: { email } 
+      });
+      if (userWithExistingEmail) {
+        throw new ConflictException('Email is already taken');
+      }
+    }
+    if (username && username !== user.username) {
+      const userWithExistingUsername = await this.usersRepository.findOne({ 
+        where: { username } 
+      });
+      if (userWithExistingUsername) {
+        throw new ConflictException('Username is already taken');
+      }
+    }
+
     if (password) {
       updateUserDto.password = await encrypt(password);
     }

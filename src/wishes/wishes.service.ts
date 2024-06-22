@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { FindOneOptions, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Wish } from './entities/wish.entity';
@@ -123,6 +123,17 @@ export class WishesService {
     const wish = await this.wishesRepository.findOneOrFail({
       where: { id: wishId },
     });
+
+    const alreadyCopied = await this.wishesRepository.createQueryBuilder('wish')
+    .leftJoin('wish.owner', 'owner')
+    .where('wish.id = :wishId', { wishId })
+    .andWhere('owner.id = :userId', { userId })
+    .getCount();
+
+    if (alreadyCopied > 0) {
+      throw new ConflictException('You have already copied this wish');
+    }
+
     const createWishDto: CreateWishDto = {
       name: wish.name,
       link: wish.link,
