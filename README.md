@@ -25,5 +25,6 @@ This project was part of a backend training module focused on complex data model
 2. Enter the project directory: cd kupipodariday-backend
 3. Install dependencies: npm install
 4. Start the development server (with hot reload): npm run start:dev
+   <br>
    Alternatively, to run once without hot reload: npm run start
-5. Use Postman to test API endpoints
+6. Use Postman to test API endpoints
